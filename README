@@ -1,27 +1,15 @@
 Rune
 ---------------------------------------------------------------
-This is my attempt to develop a completely free userland for
-the various OSes I use.
+This is a playground for ideas relating to user interface and
+application development on the various OSes I use.
+
+The long term goal is to replace a large subset of the main
+POSIX-style userland with something simpler, and easier for a
+single user to manage.
 
 Don't expect it to be complete, and don't expect a typical
 clone of the various *nix tools. I'm more than willing to try
 different things and hopefully will find something interesting.
 
 -- crc
----------------------------------------------------------------
-At present there is a mix of languages; I'm hoping to eventually
-move most of this into Retro with an extended VM that allows me
-to access the underlying OS functionality I need.
-
-Once this is done, porting Rune to new platforms will mostly be
-a matter of recompiling the underlying VM.
----------------------------------------------------------------
-Todo:
-
-  - Add data store (sqlite database)
-  - Add I/O ports to access data store
-  - Add network I/O device (see Jens notes on Retro mail list)
-  - Extend VM to handle multiple tasks at the Forth level
-  - Add VM support for curses-like screen model
-  - Start coding up a UI
 ---------------------------------------------------------------
