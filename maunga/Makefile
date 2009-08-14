@@ -1,22 +1,23 @@
-CURSES = -lncurses
-CC = gcc
-CFLAGS = -Wall -O3 -fomit-frame-pointer
+# .----,   .-----  -------  .----,    ,---,
+# |     \  |          |     |     \  |     |
+# |-----/  |---       |     |-----/  |     |
+# |  \     |          |     |  \     |     |
+# |   \    |          |     |   \    |     |
+# |    \   `-----     |     |    \    `---'
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Written by Charles Childers
+# This code is gifted to the public domain.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+default: static
 
-default: retro
-.PHONY: default
-
-# Most files can be compiled using CFLAGS...
-OFILES = devices.o disassemble.o endian.o loader.o maunga.o
-$(OFILES) vm.o: %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# ... and initial_image.o compiles much faster without -O3.
-initial_image.o: initial_image.c
-	$(CC) -Wall -c $< -o $@
-
-# Both executables link the same way, but the dependencies differ.
-retro: $(OFILES) initial_image.o vm.o
-	$(CC) $(CURSES) $^ -o $@
+static:
+	gcc -O3 -fomit-frame-pointer -c devices.c
+	gcc -O3 -fomit-frame-pointer -c endian.c
+	gcc -O3 -fomit-frame-pointer -c loader.c
+	gcc -O3 -fomit-frame-pointer -c retro.c
+	gcc -O3 -fomit-frame-pointer -c vm.c
+	ar rcs libretro.a devices.o endian.o loader.o retro.o vm.o
+	@rm -f devices.o endian.o loader.o retro.o vm.o
 
 clean:
-	rm -f *.o
+	@rm -f *.o *.a
