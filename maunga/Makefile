@@ -11,13 +11,13 @@
 default: static
 
 static:
-	gcc -O3 -fomit-frame-pointer -c devices.c
-	gcc -O3 -fomit-frame-pointer -c endian.c
-	gcc -O3 -fomit-frame-pointer -c loader.c
-	gcc -O3 -fomit-frame-pointer -c retro.c
-	gcc -O3 -fomit-frame-pointer -c vm.c
-	ar rcs libretro.a devices.o endian.o loader.o retro.o vm.o
-	@rm -f devices.o endian.o loader.o retro.o vm.o
+	cd vm && gcc -O3 -fomit-frame-pointer -c devices.c
+	cd vm && gcc -O3 -fomit-frame-pointer -c endian.c
+	cd vm && gcc -O3 -fomit-frame-pointer -c loader.c
+	cd vm && gcc -O3 -fomit-frame-pointer -c retro.c
+	cd vm && gcc -O3 -fomit-frame-pointer -c vm.c
+	cd vm && ar rcs ../libretro.a devices.o endian.o loader.o retro.o vm.o
+	cd vm && @rm -f devices.o endian.o loader.o retro.o vm.o
 
 clean:
-	@rm -f *.o *.a
+	@rm -f vm/*.o *.a
