@@ -8,12 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <curses.h>
+#include <termios.h>
 
-#include "functions.h"
-#include "vm.h"
-
-FILE *retro_internal_input[64];
+struct termios retro_internal_new_termios, retro_internal_old_termios;
+FILE *retro_internal_input[8];
 int retro_internal_isp=0;
 
 
@@ -24,13 +22,13 @@ int retro_internal_isp=0;
  ******************************************************/
 void retro_internal_dev_putch(int c)
 {
-  if (c >= 0)
+  if (c > 0)
   {
-    addch((char)c);
+    putchar((char)c);
   }
   else
   {
-    clear();
+    printf("\033[2J\033[1;1H");
   }
 }
 
@@ -40,12 +38,12 @@ void retro_internal_dev_putch(int c)
  ******************************************************/
 void retro_internal_dev_refresh()
 {
-  refresh();
 }
 
 
+
 /******************************************************
- * Read a character from an input source
+ * Get input from an input source
  ******************************************************/
 int retro_internal_dev_getch()
 {
@@ -57,7 +55,6 @@ int retro_internal_dev_getch()
     retro_internal_isp--;
     return 0;
   }
-
   if (c == EOF && retro_internal_input[retro_internal_isp] == stdin)
   {
     exit(0);
@@ -66,18 +63,15 @@ int retro_internal_dev_getch()
   if (retro_internal_input[retro_internal_isp] != stdin)
   {
     if (c == 10 || c == 13 || c == 9)
-      c = 32;
+     c = 32;
   }
-
-  if (c == 10)
-    c = 0;
 
   return c;
 }
 
 
 /******************************************************
- * Add a file to the input source list
+ * Add a file to the input stack
  ******************************************************/
 void retro_include(char *s)
 {
@@ -94,17 +88,22 @@ void retro_include(char *s)
 
 
 /******************************************************
- * Prepare real I/O hardware for the emulator
+ * Initialize real hardware devices
  ******************************************************/
 void retro_internal_dev_init(int level)
 {
-  if (level == OUTPUT)
+  if (level == 2)
   {
-    initscr();                /* initialize the curses library */
-    cbreak();                 /* take input chars one at a time, no wait for \n */
-    scrollok(stdscr, TRUE);   /* Allow the display to scroll */
+    tcgetattr(0, &retro_internal_old_termios);
+    retro_internal_new_termios = retro_internal_old_termios;
+    retro_internal_new_termios.c_iflag &= ~(BRKINT+ISTRIP+IXON+IXOFF);
+    retro_internal_new_termios.c_iflag |= (IGNBRK+IGNPAR);
+    retro_internal_new_termios.c_lflag &= ~(ICANON+ISIG+IEXTEN+ECHO);
+    retro_internal_new_termios.c_cc[VMIN] = 1;
+    retro_internal_new_termios.c_cc[VTIME] = 0;
+    tcsetattr(0, TCSANOW, &retro_internal_new_termios);
   }
-  if (level == INPUT)
+  if (level == 1)
   {
     retro_internal_isp = 0;
     retro_internal_input[retro_internal_isp] = stdin;
@@ -113,9 +112,9 @@ void retro_internal_dev_init(int level)
 
 
 /******************************************************
- * Cleanup real I/O hardware settings
+ * Restore real hardware device settings
  ******************************************************/
 void retro_internal_dev_cleanup()
 {
-  endwin();
+  tcsetattr(0, TCSANOW, &retro_internal_old_termios);
 }
