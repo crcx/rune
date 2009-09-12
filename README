@@ -1,15 +1,8 @@
 Rune
 ---------------------------------------------------------------
-This is a playground for ideas relating to user interface and
-application development on the various OSes I use.
-
-The long term goal is to replace a large subset of the main
-POSIX-style userland with something simpler, and easier for a
-single user to manage.
-
-Don't expect it to be complete, and don't expect a typical
-clone of the various *nix tools. I'm more than willing to try
-different things and hopefully will find something interesting.
+This is a playground for small applications and tools which I
+hope will eventually provide me a fairly portable, clean, and
+legally unencumbered userland for the Unix-like OSes I use.
 
 -- crc
 ---------------------------------------------------------------
