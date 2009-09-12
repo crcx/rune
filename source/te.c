@@ -3,10 +3,6 @@
  *
  * Written in 2003 by Tom Novelli
  * Updates in 2009 by Charles Childers
- *
- * This software is released into the public domain. You may
- * use, modify, and share freely and without restriction. No
- * warranty.
  **************************************************************
  * This should work on most VT100 compatible terminals under
  * Unix-like OSes with only minor modifications. The keyboard
