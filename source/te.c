@@ -59,6 +59,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "term.h"
+#include <sys/ioctl.h>
 
 char filename[256];
 FILE *f;

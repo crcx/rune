@@ -1,4 +1,6 @@
+#define getline __getline
 #include <stdio.h>
+#undef getline
 #include <limits.h>
 #include <signal.h>
 #include <fcntl.h>
