@@ -109,7 +109,7 @@ char *p;         // Buffer ptr
 char *lptr[100]; // Ptr to each line on screen
 
 
-spaces(int n)
+void spaces(int n)
 {
   int i;
   for (i = 0; i < n; i++)
@@ -117,12 +117,12 @@ spaces(int n)
   x += n;
 }
 
-cursor()
+void cursor()
 {
   xy(cx + 1, cy + 1);
 }
 
-status()
+void status()
 {
   xy(1, h - 1);
   puts("\e[0;7m");
@@ -200,7 +200,7 @@ char *eol(char *p)
   return p;
 }
 
-scrollup(int n)
+void scrollup(int n)
 {
 //
 // Scroll up N lines (max.)
@@ -313,7 +313,7 @@ done:
   modified = 0;
 }
 
-Save() {
+void Save() {
   int fd = open(filename, O_WRONLY | O_CREAT, 0644);
   if (!fd)
   {
@@ -379,7 +379,7 @@ Pgup()
   draw(1);
 }
 
-Pgdn()
+void Pgdn()
 {
   int i;
   if (!lptr[0])
@@ -450,7 +450,7 @@ End()
   }
 }
 
-Up()
+void Up()
 {
   if (cy)
   {
@@ -467,7 +467,7 @@ Up()
   //
 }
 
-Down()
+void Down()
 {
   int i;
 
@@ -488,7 +488,7 @@ Down()
   status();
 }
 
-Right()
+void Right()
 {
   /* No scroll */
   if (cx < w - 1)
@@ -503,7 +503,7 @@ Right()
   draw(1);
 }
 
-Left()
+void Left()
 {
   if (cy == 0 && lptr[0] == buf && cx <= 0)
     return;
@@ -573,7 +573,7 @@ Del()
   dirty();
 }
 
-Back()
+void Back()
 {
 //
 // Delete char. left of cursor
@@ -582,7 +582,7 @@ Back()
   Del();
 }
 
-Insert(c)
+void Insert(c)
 {
   if (c == 13)
     c = 10;
@@ -616,7 +616,7 @@ Insert(c)
 }
 
 /****************************************** KEYBOARD HANDLER */
-edit()
+void edit()
 {
   int c;
   for (;;)
@@ -715,7 +715,7 @@ edit()
 }
 
 //************************************* INITIALIZATION
-getscreensize()
+void getscreensize()
 {
   struct winsize win;
   int fd;
@@ -731,7 +731,7 @@ getscreensize()
 
 //************************************* CLEANUP
 
-quit()
+void quit()
 {
   xy(1, h); printf("\e[2K");  // put cursor at bottom
   term_cleanup();

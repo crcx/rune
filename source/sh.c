@@ -4,6 +4,11 @@
 #include <limits.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <stdlib.h>
+
+void command(int);
+void getname(char *);
+int check(char *);
 
 #define TRUE 1
 #define FALSE 0
@@ -139,7 +144,7 @@ parse(void)
 }
 
 
-command(int i)
+void command(int i)
 {
     int j, flag, inword;
 
@@ -269,7 +274,7 @@ forkexec(struct cmd *ptr)
     }
 }
 
-check(char *ptr)
+int check(char *ptr)
 {
     char *tptr;
 
@@ -291,7 +296,7 @@ check(char *ptr)
 }
 
 
-getname(char *name)
+void getname(char *name)
 {
     int i;
 
