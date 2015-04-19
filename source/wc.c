@@ -1,5 +1,8 @@
 #include<stdio.h>
 #include<fcntl.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
 
 #define STDIN 0
 #define STDOUT 1
@@ -49,6 +52,7 @@ int main(int argc, char *argv[])
 
     close(fd);
 
+    total = 0;
     for (i = 0; i < 256; i++)
 	total += chr[i];
 
