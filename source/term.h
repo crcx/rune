@@ -43,7 +43,7 @@
 
 struct termios new_termios, old_termios;
 
-term_init() {
+void term_init() {
   tcgetattr(0, &old_termios);
   new_termios = old_termios;
   new_termios.c_iflag &= ~(BRKINT+ISTRIP+IXON+IXOFF +ICRNL+INLCR);
@@ -54,15 +54,15 @@ term_init() {
   tcsetattr(0, TCSANOW, &new_termios);
 }
 
-term_cleanup() {
+void term_cleanup() {
   tcsetattr(0, TCSANOW, &old_termios);
 }
 
-xy(int x, int y) { printf("\e[%d;%dH", y, x); }
-home() { xy(1,1); }
-cls() { printf("\e[2J"); home(); }
-mode(int n) { printf("\e[%dm", n); }
-color(int n) { printf("\e[0%s;3%d;4%dm", (n<128) ? "" : ";1", (n>>4)%8, n%8); }
+void xy(int x, int y) { printf("\e[%d;%dH", y, x); }
+void home() { xy(1,1); }
+void cls() { printf("\e[2J"); home(); }
+void mode(int n) { printf("\e[%dm", n); }
+void color(int n) { printf("\e[0%s;3%d;4%dm", (n<128) ? "" : ";1", (n>>4)%8, n%8); }
 
 
 #define ALT(c)  (128+c)   // ex: ALT('a') = 225
@@ -81,7 +81,7 @@ color(int n) { printf("\e[0%s;3%d;4%dm", (n<128) ? "" : ";1", (n>>4)%8, n%8); }
 #define K_PGUP  148
 #define K_PGDN  149
 
-getkey() {
+int getkey() {
 //
 // Get a keystroke & translate to 1-byte keycodes:
 //  0-31     Control keys (no translation) .................. CTL('a') macro

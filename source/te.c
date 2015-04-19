@@ -49,6 +49,7 @@
  * [x] Fix crash when creating a new file
  * [ ] Fix crash when editing an empty file
  *************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -60,6 +61,7 @@
 #include <errno.h>
 #include "term.h"
 #include <sys/ioctl.h>
+#include <ctype.h>
 
 char filename[256];
 FILE *f;
@@ -160,7 +162,7 @@ char *drawline(char *p, int draw)
   return p;
 }
 
-draw(int flag)
+void draw(int flag)
 {
 //
 // Redraw the entire screen
@@ -221,24 +223,24 @@ void scrollup(int n)
 
 //************************************* PROMPTS
 
-msg(char *s)
+void msg(char *s)
 {
   msgbuf = s;
 }
 
-clearmsg()
+void clearmsg()
 {
   if (msgbuf)
     msgbuf=0, status();
 }
 
-promptmsg(char *s)
+void promptmsg(char *s)
 {
   xy(1, h - 1);
   puts("\e[0;1m");
   spaces(w - printf("%s", s));
   puts("\e[A\e[0m");
-  printf("\e[%dC", strlen(s));
+  printf("\e[%dC", (int)strlen(s));
 }
 
 int ync(char *s)
@@ -254,7 +256,7 @@ int ync(char *s)
     }
 }
 
-prompt(char *msg, char *buf)
+void prompt(char *msg, char *buf)
 {
 //
 // Edit string in 'buf'... example: prompt("Filename to save as: ", filename);
@@ -263,7 +265,7 @@ prompt(char *msg, char *buf)
 
 //************************************* FILE COMMANDS
 
-dirty()
+void dirty()
 {
 //
 // Mark file as modified
@@ -274,7 +276,7 @@ dirty()
     status();
 }
 
-load(char *file) {
+void load(char *file) {
   int c;
   char *p = buf;
   struct stat st;
@@ -328,22 +330,22 @@ void Save() {
   status();
 }
 
-SaveAs()
+void SaveAs()
 {
 // get filename; Save();
 }
 
-Open()
+void Open()
 {
 // get filename and load() it
 }
 
-Close()
+void Close()
 {
 // confirm; release window; exit if none left
 }
 
-Read()
+void Read()
 {
 //
 // Insert File
@@ -353,14 +355,14 @@ Read()
 
 //************************************* MOVEMENT
 
-Lnup()
+void Lnup()
 {
   scrollup(1);
   cy++;
   draw(1);
 }
 
-Lndn()
+void Lndn()
 {
   int i;
   xy(1, 1);  printf("\e[M");  // delete top line
@@ -373,7 +375,7 @@ Lndn()
   status();
 }
 
-Pgup()
+void Pgup()
 {
   scrollup(WH);
   draw(1);
@@ -401,14 +403,14 @@ cur:
   }
 }
 
-Top()
+void Top()
 {
   lptr[0] = buf;
   cx = cy = sx = row = col = 0;
   draw(1);
 }
 
-Bottom()
+void Bottom()
 {
   char *p = lptr[0];
   for (p = buf, row = 0; *p; p++)
@@ -418,7 +420,7 @@ Bottom()
   Pgup();
 }
 
-Home() {
+void Home() {
   if (sx + cx == 0)
   {
     char *p;
@@ -433,7 +435,7 @@ Home() {
   }
 }
 
-End()
+void End()
 {
   char *p;
   for (cx = 0, p = curpos(); !(*p == 10 || *p == 13); p++, cx++)
@@ -523,7 +525,7 @@ void Left()
   End();
 }
 
-Wordright()
+void Wordright()
 {
   char *p = curpos();
   do
@@ -533,7 +535,7 @@ Wordright()
   } while(isspace(p[0]) || !isspace(p[-1]));
 }
 
-Wordleft()
+void Wordleft()
 {
   char *p = curpos();
   do
@@ -545,7 +547,7 @@ Wordleft()
 
 //************************************* EDITING COMMANDS
 
-Del()
+void Del()
 {
 //
 // Delete char. under cursor
@@ -586,7 +588,7 @@ void Insert(c)
 {
   if (c == 13)
     c = 10;
-  if (c > 31 && c != 127 && c < 256 || c == 10 || c == 9)
+  if ((c > 31 && c != 127 && c < 256) || c == 10 || c == 9)
   {
     char *p = curpos(), *e = eol(lptr[cy]);
     if (p > e)
@@ -739,7 +741,7 @@ void quit()
 
 //************************************* TOP LEVEL
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   if (argc != 2)
   {

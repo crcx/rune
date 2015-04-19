@@ -6,3 +6,8 @@ legally unencumbered userland for the Unix-like OSes I use.
 
 -- crc
 ---------------------------------------------------------------
+2015 - Began work to update things to work on modern platforms
+       and compilers. (I'm mostly using Linux and OS X with
+       this now)
+
+
