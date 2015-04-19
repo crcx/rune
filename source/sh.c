@@ -32,7 +32,7 @@ char outfile[MAXNAME + 1];	/* Ouput redirection filename */
 
 int backgnd;			/* TRUE if & ends pipeline else FALSE */
 int lastpid;			/* PID of last simple command in
-				   pipeline */
+                         pipeline */
 int append;			/* TRUE for append redirection (») else FALSE */
 
 struct cmd {
@@ -51,15 +51,15 @@ void execute(int j);
 int main(void)
 {
     int i;
-
+    
     initcold();
-
+    
     for (;;) {
-	initwarm();
-
-	if (getline())
-	    if ((i = parse()))
-		execute(i);
+        initwarm();
+        
+        if (getline())
+            if ((i = parse()))
+                execute(i);
     }
     return 0;
 }
@@ -68,8 +68,8 @@ int main(void)
 void initcold(void)
 {
     /*
-       signal(SIGINT, SIG_IGN); 
-       signal (SIGOUIT, SIG_IGN);
+     signal(SIGINT, SIG_IGN);
+     signal (SIGOUIT, SIG_IGN);
      */
 }
 
@@ -78,22 +78,22 @@ void initcold(void)
 void initwarm(void)
 {
     int i;
-
+    
     backgnd = FALSE;
     lineptr = line;
     avptr = avline;
     infile[0] = '\0';
     outfile[0] = '\0';
     append = FALSE;
-
+    
     for (i = 0; i < PIPELINE; ++i) {
-	cmdlin[i].infd = 0;
-	cmdlin[i].outfd = 1;
+        cmdlin[i].infd = 0;
+        cmdlin[i].outfd = 1;
     }
-
+    
     for (i = 3; i < OPEN_MAX; ++i)
-	close(i);
-
+        close(i);
+    
     printf("sh: ");
     fflush(stdout);
 }
@@ -102,12 +102,12 @@ void initwarm(void)
 int getline(void)
 {
     int i;
-
+    
     for (i = 0; (line[i] = getchar()) != '\n' && i < MAXLINE; ++i);
-
+    
     if (i == MAXLINE) {
-	fprintf(stderr, "Command line too long\n");
-	return (ERROR);
+        fprintf(stderr, "Command line too long\n");
+        return (ERROR);
     }
     line[i + 1] = '\0';
     return (OKAY);
@@ -117,39 +117,39 @@ int getline(void)
 int parse(void)
 {
     int i;
-
+    
     /* 1 */
     command(0);
-
+    
     /* 2 */
     if (check("<"))
-	getname(infile);
-
+        getname(infile);
+    
     /* 3 */
     for (i = 1; i < PIPELINE; ++i)
-	if (check("|"))
-	    command(i);
-	else
-	    break;
-
+        if (check("|"))
+            command(i);
+        else
+            break;
+    
     /* 4 */
     if (check(">")) {
-	if (check(">"))
-	    append = TRUE;
-
-	getname(outfile);
+        if (check(">"))
+            append = TRUE;
+        
+        getname(outfile);
     }
-
+    
     /* 5 */
     if (check("&"))
-	backgnd = TRUE;
-
+        backgnd = TRUE;
+    
     /* 6 */
     if (check("\n"))
-	return (i);
+        return (i);
     else {
-	fprintf(stderr, "Command line syntax error\n");
-	return (ERROR);
+        fprintf(stderr, "Command line syntax error\n");
+        return (ERROR);
     }
 }
 
@@ -157,38 +157,38 @@ int parse(void)
 void command(int i)
 {
     int j, flag, inword;
-
+    
     for (j = 0; j < MAXARG - 1; ++j) {
-	while (*lineptr == ' ' || *lineptr == '\t')
-	    ++lineptr;
-
-	cmdlin[i].av[j] = avptr;
-	cmdlin[i].av[j + 1] = NULL;
-
-	for (flag = 0; flag == 0;) {
-	    switch (*lineptr) {
-	    case '>':
-	    case '<':
-	    case '|':
-	    case '&':
-	    case '\n':
-		if (inword == FALSE)
-		    cmdlin[i].av[j] = NULL;
-
-		*avptr++ = '\0';
-		return;
-	    case ' ':
-	    case '\t':
-		inword = FALSE;
-		*avptr++ = '\0';
-		flag = 1;
-		break;
-	    default:
-		inword = TRUE;
-		*avptr++ = *lineptr++;
-		break;
-	    }
-	}
+        while (*lineptr == ' ' || *lineptr == '\t')
+            ++lineptr;
+        
+        cmdlin[i].av[j] = avptr;
+        cmdlin[i].av[j + 1] = NULL;
+        
+        for (flag = 0; flag == 0;) {
+            switch (*lineptr) {
+                case '>':
+                case '<':
+                case '|':
+                case '&':
+                case '\n':
+                    if (inword == FALSE)
+                        cmdlin[i].av[j] = NULL;
+                    
+                    *avptr++ = '\0';
+                    return;
+                case ' ':
+                case '\t':
+                    inword = FALSE;
+                    *avptr++ = '\0';
+                    flag = 1;
+                    break;
+                default:
+                    inword = TRUE;
+                    *avptr++ = *lineptr++;
+                    break;
+            }
+        }
     }
 }
 
@@ -197,113 +197,113 @@ void command(int i)
 void execute(int j)
 {
     int i, fd, fds[2];
-
+    
     /* 1 */
     if (infile[0] != '\0')
-	cmdlin[0].infd = open(infile, O_RDONLY);
-
+        cmdlin[0].infd = open(infile, O_RDONLY);
+    
     /* 2 */
     if (outfile[0] != '\0') {
-	if (append == FALSE) {
-	    cmdlin[j - 1].outfd =
-		open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+        if (append == FALSE) {
+            cmdlin[j - 1].outfd =
+            open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0666);
         }	else {
-	    cmdlin[j - 1].outfd =
-		open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0666);
+            cmdlin[j - 1].outfd =
+            open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0666);
         }
-}
-
+    }
+    
     /* 3 */
     if (backgnd == TRUE)
-	signal(SIGCHLD, SIG_IGN);
+        signal(SIGCHLD, SIG_IGN);
     else
-	signal(SIGCHLD, SIG_DFL);
-
+        signal(SIGCHLD, SIG_DFL);
+    
     /* 4 */
     for (i = 0; i < j; ++i) {
-	/* 5 */
-	if (i < j - 1) {
-	    pipe(fds);
-	    cmdlin[i].outfd = fds[1];
-	    cmdlin[i + 1].infd = fds[0];
-	}
-
-	/* 6 */
-	forkexec(&cmdlin[i]);
-
-	/* 7 */
-	if ((fd = cmdlin[i].infd) != 0)
-	    close(fd);
-
-	if ((fd = cmdlin[i].outfd) != 1)
-	    close(fd);
+        /* 5 */
+        if (i < j - 1) {
+            pipe(fds);
+            cmdlin[i].outfd = fds[1];
+            cmdlin[i + 1].infd = fds[0];
+        }
+        
+        /* 6 */
+        forkexec(&cmdlin[i]);
+        
+        /* 7 */
+        if ((fd = cmdlin[i].infd) != 0)
+            close(fd);
+        
+        if ((fd = cmdlin[i].outfd) != 1)
+            close(fd);
     }
-
+    
     /* 8 */
     if (backgnd == FALSE)
-	while (wait(NULL) != lastpid);
+        while (wait(NULL) != lastpid);
 }
 
 void forkexec(struct cmd *ptr)
 {
     int i, pid;
-
+    
     /* 1 */
     if ((pid = fork())) {
-	/* 2 */
-	if (backgnd == TRUE)
-	    printf("%d\n", pid);
-	lastpid = pid;
+        /* 2 */
+        if (backgnd == TRUE)
+            printf("%d\n", pid);
+        lastpid = pid;
     } else {
-	/* 3 */
-	if (ptr->infd == 0 && backgnd == TRUE)
-	    ptr->infd = open("/dev/null", O_RDONLY);
-
-	/* 4 */
-	if (ptr->infd != 0) {
-	    close(0);
-	    dup(ptr->infd);
-	}
-
-	if (ptr->outfd != 1) {
-	    close(1);
-	    dup(ptr->outfd);
-	}
-
-	/* 5 */
-	if (backgnd == FALSE) {
-	    signal(SIGINT, SIG_DFL);
-	    signal(SIGQUIT, SIG_DFL);
-	}
-
-	/* 6 */
-	for (i = 3; i < OPEN_MAX; ++i)
-	    close(i);
-
-	/* 7 */
-	execvp(ptr->av[0], ptr->av);
-	exit(1);
+        /* 3 */
+        if (ptr->infd == 0 && backgnd == TRUE)
+            ptr->infd = open("/dev/null", O_RDONLY);
+        
+        /* 4 */
+        if (ptr->infd != 0) {
+            close(0);
+            dup(ptr->infd);
+        }
+        
+        if (ptr->outfd != 1) {
+            close(1);
+            dup(ptr->outfd);
+        }
+        
+        /* 5 */
+        if (backgnd == FALSE) {
+            signal(SIGINT, SIG_DFL);
+            signal(SIGQUIT, SIG_DFL);
+        }
+        
+        /* 6 */
+        for (i = 3; i < OPEN_MAX; ++i)
+            close(i);
+        
+        /* 7 */
+        execvp(ptr->av[0], ptr->av);
+        exit(1);
     }
 }
 
 int check(char *ptr)
 {
     char *tptr;
-
+    
     while (*lineptr == ' ')
-	lineptr++;
-
+        lineptr++;
+    
     tptr = lineptr;
-
+    
     while (*ptr != '\0' && *ptr == *tptr) {
-	ptr++;
-	tptr++;
+        ptr++;
+        tptr++;
     }
     if (*ptr != '\0')
-	return (FALSE);
+        return (FALSE);
     else {
-	lineptr = tptr;
-	return (TRUE);
+        lineptr = tptr;
+        return (TRUE);
     }
 }
 
@@ -311,23 +311,23 @@ int check(char *ptr)
 void getname(char *name)
 {
     int i;
-
+    
     for (i = 0; i < MAXNAME; ++i) {
-	switch (*lineptr) {
-	case '>':
-	case '<':
-	case '|':
-	case '&':
-	case ' ':
-	case '\n':
-	case '\t':
-	    *name = '\0';
-	    return;
-
-	default:
-	    *name++ = *lineptr++;
-	    break;
-	}
+        switch (*lineptr) {
+            case '>':
+            case '<':
+            case '|':
+            case '&':
+            case ' ':
+            case '\n':
+            case '\t':
+                *name = '\0';
+                return;
+                
+            default:
+                *name++ = *lineptr++;
+                break;
+        }
     }
     *name = '\0';
 }
