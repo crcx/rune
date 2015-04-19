@@ -8,8 +8,8 @@
 int main(int argc, char *argv[])
 {
     int file = 0;
-    int i = 1, count = 0;
-    char buffer[MAX_BUFFER];
+    int j, i = 1, count = 0;
+    char buffer[MAX_BUFFER + 1];
     
     if (!(--argc))
         goto loop;
@@ -19,6 +19,8 @@ main_cat_loop:
         return 1;
     
 loop:
+    for (j = 0; j < MAX_BUFFER; j++)
+        buffer[j] = '\0';
     if ((count = read(file, buffer, MAX_BUFFER)))
     {
         printf("%s", buffer);
