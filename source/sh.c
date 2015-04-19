@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void command(int);
 void getname(char *);
@@ -18,7 +19,9 @@ int check(char *);
 #define MAXARG 20		/* Max number of args for each simple command */
 #define PIPELINE 5		/* Max number of simple commands in a pipeline */
 #define MAXNAME 100		/* Maximum length of i/o redirection filename */
+#ifndef OPEN_MAX
 #define OPEN_MAX 100
+#endif
 
 char line[MAXLINE + 1];		/* User typed input line */
 char *lineptr;			/* Pointer to current position in line[] */
@@ -38,8 +41,14 @@ struct cmd {
     int outfd;
 } cmdlin[PIPELINE];		/* Argvs and fds, one per simple command */
 
+void forkexec(struct cmd *ptr);
+void initcold();
+void initwarm();
+int parse();
+int getline();
+void execute(int j);
 
-main(void)
+int main(void)
 {
     int i;
 
@@ -49,13 +58,14 @@ main(void)
 	initwarm();
 
 	if (getline())
-	    if (i = parse())
+	    if ((i = parse()))
 		execute(i);
     }
+    return 0;
 }
 
 
-initcold(void)
+void initcold(void)
 {
     /*
        signal(SIGINT, SIG_IGN); 
@@ -65,7 +75,7 @@ initcold(void)
 
 
 
-initwarm(void)
+void initwarm(void)
 {
     int i;
 
@@ -89,7 +99,7 @@ initwarm(void)
 }
 
 
-getline(void)
+int getline(void)
 {
     int i;
 
@@ -104,7 +114,7 @@ getline(void)
 }
 
 
-parse(void)
+int parse(void)
 {
     int i;
 
@@ -184,7 +194,7 @@ void command(int i)
 
 
 
-execute(int j)
+void execute(int j)
 {
     int i, fd, fds[2];
 
@@ -193,13 +203,15 @@ execute(int j)
 	cmdlin[0].infd = open(infile, O_RDONLY);
 
     /* 2 */
-    if (outfile[0] != '\0')
-	if (append == FALSE)
+    if (outfile[0] != '\0') {
+	if (append == FALSE) {
 	    cmdlin[j - 1].outfd =
 		open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else
+        }	else {
 	    cmdlin[j - 1].outfd =
 		open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0666);
+        }
+}
 
     /* 3 */
     if (backgnd == TRUE)
@@ -232,12 +244,12 @@ execute(int j)
 	while (wait(NULL) != lastpid);
 }
 
-forkexec(struct cmd *ptr)
+void forkexec(struct cmd *ptr)
 {
     int i, pid;
 
     /* 1 */
-    if (pid = fork()) {
+    if ((pid = fork())) {
 	/* 2 */
 	if (backgnd == TRUE)
 	    printf("%d\n", pid);
