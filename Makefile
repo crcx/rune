@@ -1,9 +1,12 @@
+CC = clang
+FLAGS = -s -O3
+
 default:
-	@cd source && gcc cat.c -o ../bin/cat
-	@cd source && gcc ls.c -o ../bin/ls
-	@cd source && gcc sh.c -o ../bin/sh
-	@cd source && gcc te.c -o ../bin/te
-	@cd source && gcc wc.c -o ../bin/wc
+	@cd source && $(CC) $(FLAGS) cat.c -o ../bin/cat
+	@cd source && $(CC) $(FLAGS) ls.c -o ../bin/ls
+	@cd source && $(CC) $(FLAGS) sh.c -o ../bin/sh
+	@cd source && $(CC) $(FLAGS) te.c -o ../bin/te
+	@cd source && $(CC) $(FLAGS) wc.c -o ../bin/wc
 
 clean:
 	@rm -f bin/cat
