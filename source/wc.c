@@ -44,7 +44,7 @@ read_loop:
                 words++;
             chr[*buffer]++;
         }
-        *buffer++;
+        (*buffer)++;
     }
     buffer = beg_buffer;
     if (read_count)
