@@ -3,6 +3,7 @@ FLAGS = -s -O3
 
 default:
 	@cd source && $(CC) $(FLAGS) cat.c -o ../bin/cat
+	@cd source && $(CC) $(FLAGS) echo.c -o ../bin/echo
 	@cd source && $(CC) $(FLAGS) grep.c -o ../bin/grep
 	@cd source && $(CC) $(FLAGS) kill.c -o ../bin/kill
 	@cd source && $(CC) $(FLAGS) ls.c -o ../bin/ls
@@ -12,6 +13,7 @@ default:
 
 clean:
 	@rm -f bin/cat
+	@rm -f bin/echo
 	@rm -f bin/grep
 	@rm -f bin/kill
 	@rm -f bin/ls
